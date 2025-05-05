@@ -1,3 +1,5 @@
+// Blink the on-board LED.
+
 #![no_std]
 #![no_main]
 
