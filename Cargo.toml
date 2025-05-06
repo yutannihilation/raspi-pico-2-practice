@@ -1,5 +1,5 @@
 [package]
-name = "rp2350-blink"
+name = "rp2350-misc"
 version = "0.1.0"
 edition = "2024"
 
@@ -32,3 +32,4 @@ defmt = "1.0.1"
 defmt-rtt = "1.0.0"
 panic-probe = "1.0.0"
 fixed = "1.29.0"
+embassy-sync = "0.6.2"
