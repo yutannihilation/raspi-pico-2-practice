@@ -1,4 +1,43 @@
-// Blink the on-board LED.
+// Control 74CH595 (shift register) via PIO
+//
+// ### Wires from RasPi Pico
+//
+//         ┌─────v─────┐
+//       1 │           │ 16
+//       2 │           │ 15
+//       3 │           │ 14 Input  <------------ GPIO_2
+//       4 │           │ 13
+//       5 │           │ 12 Clock for input  <-- GPIO_3
+//       6 │           │ 11 Clock for output  <- GPIO_4
+//       7 │           │ 10
+//       8 │           │  9
+//         └───────────┘
+//
+// ### Output
+//
+//          ┌─────v─────┐
+//     QB 1 │           │ 16
+//     QC 2 │           │ 15 QA
+//     QD 3 │           │ 14
+//     QE 4 │           │ 13
+//     QF 5 │           │ 12
+//     QG 6 │           │ 11
+//     QH 7 │           │ 10
+//        8 │           │  9
+//          └───────────┘
+
+// ### Other pins
+//
+//           ┌─────v─────┐
+//         1 │           │ 16 Vcc
+//         2 │           │ 15
+//         3 │           │ 14
+//         4 │           │ 13 Disable  <--- GND
+//         5 │           │ 12
+//         6 │           │ 11
+//         7 │           │ 10 Clear  <----- Vcc
+//     GND 8 │           │  9 (chain to next)
+//           └───────────┘
 
 #![no_std]
 #![no_main]
@@ -11,11 +50,9 @@ use panic_probe as _;
 use embassy_executor::Spawner;
 use embassy_rp::{
     Peri, bind_interrupts,
-    gpio::{Level, Output},
     peripherals::PIO0,
     pio::{
-        Common, Config, FifoJoin, Instance, InterruptHandler, PinConfig, Pio, PioPin,
-        ShiftDirection, StateMachine, program::pio_file,
+        Common, Config, Instance, InterruptHandler, Pio, PioPin, StateMachine, program::pio_file,
     },
 };
 use embassy_time::{Duration, Timer};
@@ -86,7 +123,7 @@ async fn main(_spawner: Spawner) {
         p.PIN_4, // ratch_pin
     );
 
-    let delay = Duration::from_millis(1000);
+    let delay = Duration::from_millis(100);
     let mut i = 0u32;
     loop {
         info!("i: {:032b}", i);
